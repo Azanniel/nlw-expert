@@ -1,6 +1,7 @@
-import z from "zod"
-import { prisma } from "../../lib/prisma"
-import { FastifyInstance } from "fastify"
+import { FastifyInstance } from 'fastify'
+import z from 'zod'
+
+import { prisma } from '../../lib/prisma'
 
 export async function getPoll(app: FastifyInstance) {
   app.get('/polls/:pollId', async (request, reply) => {
@@ -12,16 +13,16 @@ export async function getPoll(app: FastifyInstance) {
 
     const poll = await prisma.poll.findUnique({
       where: {
-        id: pollId
+        id: pollId,
       },
       include: {
         options: {
           select: {
             id: true,
-            title: true
-          }
-        }
-      }
+            title: true,
+          },
+        },
+      },
     })
 
     if (!poll) {
