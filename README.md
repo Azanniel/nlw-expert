@@ -12,7 +12,7 @@ O Evento aconteceu nos dias 05 a 08 de fevereiro de 2024.
 </p>
 
 Neste repositório você irá encontrar os projetos desenvolvidos durante essa semana de muito código os quais usaram as seguintes tecnologias:
-- NodeJS
+- [NodeJS](./polls)
 - ReactJS
 
 ## 🖼️ Wallpapers
