@@ -21,7 +21,12 @@ export function App() {
         <NewNoteCard />
 
         {Array.from({ length: 7 }).map((_, index) => {
-          return <NoteCard key={index} />
+          return (
+            <NoteCard
+              note={{ date: new Date(), content: `Content ${index + 1}` }}
+              key={index}
+            />
+          )
         })}
       </div>
     </div>
