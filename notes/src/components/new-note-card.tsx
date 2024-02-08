@@ -3,7 +3,17 @@ import { X } from 'lucide-react'
 import { ChangeEvent, FormEvent, useState } from 'react'
 import { toast } from 'sonner'
 
-export function NewNoteCard() {
+interface NewNoteCardProps {
+  onNoteCreated: (content: string) => void
+}
+
+const SpeechRecognitionAPI =
+  window.SpeechRecognition || window.webkitSpeechRecognition
+
+const speechRecognition = new SpeechRecognitionAPI()
+
+export function NewNoteCard({ onNoteCreated }: NewNoteCardProps) {
+  const [isRecording, setIsRecording] = useState(false)
   const [shouldShowOnboarding, setShouldShowOnboarding] = useState(true)
   const [content, setContent] = useState('')
 
@@ -22,9 +32,56 @@ export function NewNoteCard() {
   function handleSaveNote(event: FormEvent) {
     event.preventDefault()
 
-    console.log(content)
+    if (content === '') {
+      return
+    }
+
+    onNoteCreated(content)
+
+    setContent('')
+    setShouldShowOnboarding(true)
 
     toast.success('Nota criada com sucesso!')
+  }
+
+  function handleStartRecording() {
+    const isSpeechRecognitionAPIAvailable =
+      'SpeechRecognition' in window || 'webkitSpeechRecognition' in window
+
+    if (!isSpeechRecognitionAPIAvailable) {
+      alert('Infelizmente seu navegador não suporta a API de gravação!')
+      return
+    }
+
+    setIsRecording(true)
+    setShouldShowOnboarding(false)
+
+    speechRecognition.lang = 'pt-BR'
+    speechRecognition.continuous = true // Ele não vai parar até que eu interrompa
+    speechRecognition.maxAlternatives = 1 // Somente uma alternativa de resultado
+    speechRecognition.interimResults = true // Trazer os resultados conforme vou falando
+
+    speechRecognition.onresult = (event) => {
+      const transcription = Array.from(event.results).reduce((text, result) => {
+        return text.concat(result[0].transcript)
+      }, '')
+
+      setContent(transcription)
+    }
+
+    speechRecognition.onerror = (event) => {
+      console.error(event)
+    }
+
+    speechRecognition.start()
+  }
+
+  function handleStopRecording() {
+    setIsRecording(false)
+
+    if (speechRecognition !== null) {
+      speechRecognition.stop()
+    }
   }
 
   return (
@@ -42,12 +99,12 @@ export function NewNoteCard() {
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/50" />
 
-        <Dialog.Content className="fixed left-1/2 top-1/2 flex h-[60vh] w-full max-w-[640px] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-md bg-slate-700 outline-none">
+        <Dialog.Content className="fixed inset-0 flex w-full flex-col overflow-hidden bg-slate-700 outline-none md:inset-auto md:left-1/2 md:top-1/2 md:h-[60vh] md:max-w-[640px] md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-md">
           <Dialog.Close className="absolute right-0 top-0 bg-slate-800 p-1.5 text-slate-400 hover:text-slate-100">
             <X className="size-5" />
           </Dialog.Close>
 
-          <form className="flex flex-1 flex-col" onSubmit={handleSaveNote}>
+          <form className="flex flex-1 flex-col">
             <div className="flex flex-1 flex-col gap-3 p-5">
               <span className="text-sm font-medium text-slate-300">
                 Adicionar nota
@@ -56,11 +113,16 @@ export function NewNoteCard() {
               {shouldShowOnboarding ? (
                 <p className="text-sm leading-6 text-slate-400">
                   Comece{' '}
-                  <button className="font-medium text-lime-400 hover:underline">
+                  <button
+                    type="button"
+                    className="font-medium text-lime-400 hover:underline"
+                    onClick={handleStartRecording}
+                  >
                     gravando uma nota
                   </button>{' '}
                   em áudio ou se preferir{' '}
                   <button
+                    type="button"
                     className="font-medium text-lime-400 hover:underline"
                     onClick={handleStartEditor}
                   >
@@ -73,16 +135,29 @@ export function NewNoteCard() {
                   autoFocus
                   className="flex-1 resize-none bg-transparent text-sm leading-6 text-slate-400 outline-none"
                   onChange={handleContentChanged}
+                  value={content}
                 />
               )}
             </div>
 
-            <button
-              className="w-full bg-lime-400 py-4 text-center text-sm font-medium text-lime-950 outline-none hover:bg-lime-500"
-              type="submit"
-            >
-              Salvar nota
-            </button>
+            {isRecording ? (
+              <button
+                type="button"
+                className="flex w-full items-center justify-center gap-2 bg-slate-900 py-4 text-center text-sm font-medium text-slate-300 outline-none hover:text-slate-100"
+                onClick={handleStopRecording}
+              >
+                <div className="size-3 animate-pulse rounded-full bg-red-500" />
+                Gravando! (clique p/ interromper)
+              </button>
+            ) : (
+              <button
+                className="w-full bg-lime-400 py-4 text-center text-sm font-medium text-lime-950 outline-none hover:bg-lime-500"
+                type="button"
+                onClick={handleSaveNote}
+              >
+                Salvar nota
+              </button>
+            )}
           </form>
         </Dialog.Content>
       </Dialog.Portal>
