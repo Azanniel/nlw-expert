@@ -3,6 +3,9 @@
 Essa aplicação foi desenvolvida durante o NLW Experts da Rocketseat utilizando React, TypeScript, Tailwind e a SpeechRecognition API.
 Nela desenvolvemos uma aplicação de notas onde você pode guardar suas notas usando sua voz, e enquanto você fala a aplicação já deixa tudo anotado para você.
 
+![image](https://github.com/Azanniel/nlw-expert/assets/71537090/7ee61c8f-5fb7-431d-adb2-49041b8a1872)
+
+
 ## 🔧 Executando
 
 Após clonar o repositório, acesse a pasta do projeto e execute os comandos abaixo:
