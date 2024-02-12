@@ -7,7 +7,7 @@ interface HeaderProps {
   cartQuantity?: number
 }
 
-export function Header(props: HeaderProps) {
+export function Header({ title, cartQuantity = 0 }: HeaderProps) {
   return (
     <View className="mx-5 flex-row items-center border-b border-slate-700 pb-5">
       <View className="flex-1">
@@ -16,16 +16,14 @@ export function Header(props: HeaderProps) {
           source={require('@/assets/logo.png')}
           alt=""
         />
-        <Text className="mt-2 font-heading text-xl text-white">
-          {props.title}
-        </Text>
+        <Text className="mt-2 font-heading text-xl text-white">{title}</Text>
       </View>
 
-      {props.cartQuantity && (
+      {cartQuantity > 0 && (
         <TouchableOpacity className="relative" activeOpacity={0.7}>
           <View className="absolute -right-2 -top-1 z-10 h-4 w-4 items-center justify-center rounded-full bg-lime-300">
             <Text className="text-xs font-bold text-slate-900">
-              {props.cartQuantity}
+              {cartQuantity}
             </Text>
           </View>
 

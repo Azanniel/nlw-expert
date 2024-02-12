@@ -6,7 +6,7 @@ import {
   useFonts,
 } from '@expo-google-fonts/inter'
 import { Slot } from 'expo-router'
-import { SafeAreaView } from 'react-native'
+import { View } from 'react-native'
 
 import { Loading } from '@/components/loading'
 
@@ -23,8 +23,8 @@ export default function Layout() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-900">
+    <View className="flex-1 bg-slate-900">
       <Slot />
-    </SafeAreaView>
+    </View>
   )
 }

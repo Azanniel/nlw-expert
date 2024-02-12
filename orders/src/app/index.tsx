@@ -1,20 +1,40 @@
-import { useState } from 'react'
-import { FlatList, View } from 'react-native'
+import { router } from 'expo-router'
+import { useRef, useState } from 'react'
+import { FlatList, SectionList, Text, View } from 'react-native'
 
 import { ButtonCategory } from '@/components/button-category'
 import { Header } from '@/components/header'
-import { CATEGORIES } from '@/utils/data/products'
+import { Product } from '@/components/product'
+import { useCartStore } from '@/storage/cart-store'
+import { CATEGORIES, MENU } from '@/utils/data/products'
+
+type SectionItem = (typeof MENU)[number]['data'][number]
 
 export default function App() {
   const [selectedCategory, setSelectedCategory] = useState(CATEGORIES[0])
 
+  const { products } = useCartStore()
+  const sectionRef = useRef<SectionList<SectionItem>>(null)
+
   function handleCategorySelect(category: string) {
     setSelectedCategory(category)
+
+    const sectionIndex = CATEGORIES.findIndex((item) => item === category)
+
+    if (sectionIndex === -1) {
+      return
+    }
+
+    sectionRef.current?.scrollToLocation({
+      animated: true,
+      sectionIndex,
+      itemIndex: 0,
+    })
   }
 
   return (
     <View className="flex-1 pt-8">
-      <Header title="Faça seu pedido" cartQuantity={4} />
+      <Header title="Faça seu pedido" cartQuantity={products.length} />
 
       <FlatList
         className="mt-5 max-h-10"
@@ -30,6 +50,31 @@ export default function App() {
               isSelected={item === selectedCategory}
               onPress={() => handleCategorySelect(item)}
             />
+          )
+        }}
+      />
+
+      <SectionList
+        className="flex-1 p-5"
+        ref={sectionRef}
+        sections={MENU}
+        keyExtractor={(item) => item.id}
+        stickySectionHeadersEnabled={false}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 100 }}
+        renderItem={({ item }) => {
+          return (
+            <Product
+              data={item}
+              onPress={() => router.navigate(`/product/${item.id}`)}
+            />
+          )
+        }}
+        renderSectionHeader={({ section }) => {
+          return (
+            <Text className="mb-3 mt-8 font-heading text-xl text-slate-100">
+              {section.title}
+            </Text>
           )
         }}
       />
