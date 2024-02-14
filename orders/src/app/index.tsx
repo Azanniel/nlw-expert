@@ -6,15 +6,13 @@ import { ButtonCategory } from '@/components/button-category'
 import { Header } from '@/components/header'
 import { Product } from '@/components/product'
 import { useCartStore } from '@/storage/cart-store'
-import { CATEGORIES, MENU } from '@/utils/data/products'
-
-type SectionItem = (typeof MENU)[number]['data'][number]
+import { CATEGORIES, MENU, ProductProps } from '@/utils/data/products'
 
 export default function App() {
   const [selectedCategory, setSelectedCategory] = useState(CATEGORIES[0])
 
   const { products } = useCartStore()
-  const sectionRef = useRef<SectionList<SectionItem>>(null)
+  const sectionRef = useRef<SectionList<ProductProps>>(null)
 
   function handleCategorySelect(category: string) {
     setSelectedCategory(category)

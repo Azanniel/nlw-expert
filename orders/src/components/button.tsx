@@ -16,6 +16,7 @@ function Button({ className, ...props }: ButtonProps) {
     <TouchableOpacity
       className={cn(
         'h-12 flex-row items-center justify-center rounded-md bg-lime-400',
+        props.disabled && 'bg-lime-600',
         className,
       )}
       activeOpacity={0.7}
